@@ -1,0 +1,49 @@
+---
+title: "Massachusetts"
+author: "Ryan Bansal"
+execute:
+    echo: FALSE
+    message: FALSE
+    warning: FALSE
+---
+
+This map visualizes the distribution of median household income across census tracts in Massachusetts, based on data from the 2021 American Community Survey (ACS). Each shaded region represents a different census tract, with color intensity indicating income levels—lighter shades signal lower median incomes, while darker shades highlight wealthier areas. The use of a vibrant plasma color scale makes income disparities easy to spot, revealing distinct geographic patterns of economic inequality. Urban centers like Boston show sharp contrasts between neighborhoods, while rural areas display more gradual variations. This spatial representation provides valuable insight into the socioeconomic landscape of the state, helping policymakers, researchers, and communities better understand local economic conditions.
+```{r}
+# Load required libraries
+library(tidycensus)
+library(tidyverse)
+
+# Set your Census API key (run once, replace with your key)
+census_api_key("45e1af3ffb521fc4b91d5f79fab56bad36f47a60", install = TRUE, overwrite = TRUE)
+readRenviron("~/.Renviron")  # reload environment variables
+
+# Get median household income by census tract in Massachusetts (2021 ACS 5-year)
+
+
+ma_income <- get_acs(
+  geography = "tract",
+  state = "MA",
+  variables = "B19013_001",  # Median household income
+  year = 2021,
+  geometry = TRUE
+)
+
+# Plot the median household income map
+ggplot(ma_income) +
+  geom_sf(aes(fill = estimate), color = NA) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    name = "Median Household Income",
+    labels = scales::dollar
+  ) +
+  labs(
+    title = "Median Household Income by Census Tract in Massachusetts (2021)",
+    subtitle = "Source: ACS 5-Year Estimates",
+    caption = "Data via tidycensus"
+  ) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+
+```
+
+
